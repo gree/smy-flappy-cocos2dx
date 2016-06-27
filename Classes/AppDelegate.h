@@ -2,6 +2,7 @@
 #define  _APP_DELEGATE_H_
 
 #include "cocos2d.h"
+#include "Main.h"
 
 /**
 @brief    The cocos2d Application.
@@ -34,6 +35,10 @@ public:
     @param  the pointer of the application
     */
     virtual void applicationWillEnterForeground();
+
+    void update(float delta);
+private:
+    flappySample::Main _main;
 };
 
 #endif // _APP_DELEGATE_H_

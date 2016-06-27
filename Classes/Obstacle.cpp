@@ -21,7 +21,7 @@ bool Obstacle::init()
     Size visibleSize = Director::getInstance()->getVisibleSize();
     std::random_device rnd;
     std::mt19937 mt(rnd());
-    std::uniform_int_distribution<> rand100(100, visibleSize.height - 100);
+    std::uniform_int_distribution<> rand100(200, visibleSize.height - 100);
     auto pathPosY = rand100(mt);
 
     _spriteList = std::vector<Sprite*>();
@@ -35,11 +35,11 @@ bool Obstacle::init()
     this->addChild(upSprite);
  
     auto downSprite = Sprite::create();
-    Rect downRect = Rect(0, 0, 50, pathPosY - 50);
+    Rect downRect = Rect(0, 0, 50, pathPosY - 150);
     downSprite->setTextureRect(downRect);
-    downSprite->setColor(Color3B::RED);
+    downSprite->setColor(Color3B::GREEN);
     downSprite->setAnchorPoint(Vec2(0, 0));
-    downSprite->setPosition(0, 0);
+    downSprite->setPosition(0, 100);
     _spriteList.push_back(downSprite);
     this->addChild(downSprite);
    

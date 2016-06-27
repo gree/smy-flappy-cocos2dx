@@ -80,12 +80,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     register_all_packages();
 
-    // create a scene. it's an autorelease object
-//    auto scene = HelloWorld::createScene();
-    auto scene = GameScene::createWithPhysics();
-
-    // run
-    director->runWithScene(scene);
+    director->getScheduler()->scheduleUpdate(this, 0, false);
 
     return true;
 }
@@ -104,4 +99,8 @@ void AppDelegate::applicationWillEnterForeground() {
 
     // if you use SimpleAudioEngine, it must resume here
     // SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+}
+
+void AppDelegate::update(float delta) {
+    _main.update(delta);
 }

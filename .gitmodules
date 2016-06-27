@@ -1,0 +1,9 @@
+[submodule "tool/statemachine"]
+	path = tool/statemachine
+	url = git@git.gree-dev.net:takahisa-nomura/statemachine.git
+[submodule "tool/--force"]
+	path = tool/--force
+	url = git@git.gree-dev.net:takahisa-nomura/statemachine.git
+[submodule "tool/--name"]
+	path = tool/--name
+	url = git@git.gree-dev.net:takahisa-nomura/statemachine.git

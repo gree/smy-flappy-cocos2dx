@@ -15,4 +15,5 @@ public:
     CREATE_FUNC(Player);
     virtual bool init();
     void jump();
+    void start();
 };

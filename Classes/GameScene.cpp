@@ -31,71 +31,81 @@ bool GameScene::initWithPhysics()
     }
   
     Vect gravity;
-    gravity.setPoint(0, -1);
+    gravity.setPoint(0, -50);
+    this->getPhysicsWorld()->setGravity(gravity);
     this->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
-    this->getPhysicsWorld()->setSpeed(5.0f);
+    this->getPhysicsWorld()->setSpeed(6.0f);
     
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-    _statusLabel = Label::createWithTTF("Tap Start", "fonts/Marker Felt.ttf", 24);
+    _statusLabel = Label::createWithSystemFont("Tap Start", "HiraKakuProN-W6", 24);
     _statusLabel->setPosition(Vec2(origin.x + visibleSize.width/2,
                             origin.y + visibleSize.height - _statusLabel->getContentSize().height));
-    this->addChild(_statusLabel, 1);
+    this->addChild(_statusLabel, 3);
     
-    _scoreLabel = Label::createWithTTF("0", "fonts/Marker Felt.ttf", 24);
+    _scoreLabel = Label::createWithSystemFont(std::to_string(_score), "HiraKakuProN-W6", 24);
     _scoreLabel->setPosition(Vec2(origin.x + visibleSize.width/2,
                             origin.y + visibleSize.height - _statusLabel->getContentSize().height - 100));
-    this->addChild(_scoreLabel, 1);
+    this->addChild(_scoreLabel, 3);
 
-    _player = Player::create();
-    addChild(_player);
+    _obstacleList = std::vector<Obstacle*>();
     
-    initObstacle();
-
+    auto ground = Sprite::create();
+    Rect rect = Rect(0, 0, visibleSize.width, 100);
+    ground->setTextureRect(rect);
+    ground->setColor(Color3B::YELLOW);
+    ground->setPosition(visibleSize.width / 2, 50);
+    this->addChild(ground, 1);
+    
+    _player = Player::create();
+    addChild(_player, 2);
+    
     auto taplistener = EventListenerTouchAllAtOnce::create();
     taplistener->onTouchesBegan = [this](const std::vector<Touch*>& touch, Event* event) {
-        if (this->_isGmaeOver) {
-            if (this->_player->getPositionY() < 0) {
-                this->restart();
-            }
-        } else {
-            this->_player->jump();
-        }
+        this->_isTap = true;
     };
     this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(taplistener, this);
+    
+    this->initGame();
  
-    this->scheduleUpdate();
     return true;
 }
 
-void GameScene::initObstacle()
+void GameScene::initGame()
 {
-    _obstacleList = std::vector<Obstacle*>();
+    Size visibleSize = Director::getInstance()->getVisibleSize();
+    _player->setPosition(visibleSize.width / 4, visibleSize.height / 2 + 100);
+    for (auto obstacle : _obstacleList) {
+        obstacle->removeFromParent();
+    }
+    _obstacleList.clear();
     for (auto i = 0; i < 5; ++i) {
         auto obstacle = Obstacle::create();
         obstacle->setSpritePosX(420 + (i * 300));
         _obstacleList.push_back(obstacle);
-        this->addChild(obstacle);
+        this->addChild(obstacle, 1);
     }
+    _statusLabel->setString("Tap Start");
+    _score = 0;
+    _scoreLabel->setString(std::to_string(_score));
+    _isGameOver = false;
 }
 
-void GameScene::restart()
+void GameScene::start()
 {
-    _isGmaeOver = false;
-    Size visibleSize = Director::getInstance()->getVisibleSize();
-    _player->setPosition(visibleSize.width / 4, visibleSize.height / 2);
-    for (auto obstacle : _obstacleList) {
-        obstacle->removeFromParent();
-    }
-    initObstacle();
+    _player->getPhysicsBody()->setEnabled(true);
+    _player->jump();
+    _statusLabel->setVisible(false);
 }
 
-void GameScene::update(float delta)
+void GameScene::updateGame(float delta)
 {
-    if (_isGmaeOver) {
-        return;
+    if (_isTap) {
+        _player->jump();
+        _isTap = false;
     }
+    
     Size visibleSize = Director::getInstance()->getVisibleSize();
     for (auto it = _obstacleList.begin(); it != _obstacleList.end();) {
         auto obstacle = *it;
@@ -103,10 +113,12 @@ void GameScene::update(float delta)
         x -= delta * 150;
         obstacle->setSpritePosX(x);
         
-        if (obstacle->intersects(_player->getBoundingBox())) {
+        if (obstacle->intersects(_player->getBoundingBox()) ||
+            _player->getPositionY() < (100.0f + _player->getBoundingBox().size.height / 2)) {
             auto rect = _player->getBoundingBox();
             _statusLabel->setString("Game Over");
-            _isGmaeOver = true;
+            _statusLabel->setVisible(true);
+            _isGameOver = true;
         }
         if (x < visibleSize.width / 4 && !obstacle->getIsPass()) {
             obstacle->setIsPass(true);

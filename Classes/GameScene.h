@@ -15,16 +15,17 @@ class GameScene : public cocos2d::Scene
 public:
     static const float JUMP_UP;
     static GameScene* createWithPhysics();
+    GameScene():_isTap(false), _statusLabel(nullptr), _scoreLabel(nullptr), _isGameOver(false), _player(nullptr){};
     virtual bool initWithPhysics();
-
+    void initGame();
+    void start();
+    CC_SYNTHESIZE(bool, _isTap, IsTap);
+    CC_SYNTHESIZE_READONLY(cocos2d::Label*, _statusLabel, StatusLabel);
+    CC_SYNTHESIZE_READONLY(cocos2d::Label*, _scoreLabel, ScoreLabel);
+    CC_SYNTHESIZE_READONLY(bool, _isGameOver, IsGameOver);
+    CC_SYNTHESIZE_READONLY(Player*, _player, Player);
+    void updateGame(float delta);
 private:
-    void update(float delta);
-    void restart();
-    void initObstacle();
-    Player* _player = nullptr;
     int _score = 0;
-    bool _isGmaeOver = false;
-    cocos2d::Label* _statusLabel = nullptr;
-    cocos2d::Label* _scoreLabel = nullptr;
     std::vector<Obstacle*> _obstacleList;
 };

@@ -10,7 +10,7 @@
 
 USING_NS_CC;
 
-const float Player::JUMP_UP = 200.0f;
+const float Player::JUMP_UP = 140.0f;
 
 bool Player::init()
 {
@@ -23,13 +23,13 @@ bool Player::init()
     this->setColor(Color3B::WHITE);
   
     Size visibleSize = Director::getInstance()->getVisibleSize();
-    this->setPosition(visibleSize.width / 4, visibleSize.height / 2);
+    this->setPosition(visibleSize.width / 4, visibleSize.height / 2 + 100);
   
     auto pb = PhysicsBody::createBox(Size(this->getContentSize().width, this->getContentSize().height));
-    pb->setEnabled(true);
+    pb->setEnabled(false);
     pb->setMass(1.0f);
     pb->setVelocity(Vect(0,1));
-    pb->setVelocityLimit(200.0);
+    pb->setVelocityLimit(50.0f);
     pb->setRotationEnable(false);
     pb->setAngularVelocityLimit(150.0f);
     this->setPhysicsBody(pb);
